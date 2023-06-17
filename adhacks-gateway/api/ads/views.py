@@ -124,18 +124,25 @@ def generate_campaign(comp_id):
         objectives = request.json['campaign_purpose']
         link = request.json['link']
         social_media = request.json['social_media']
-        lead_conv_enabled = request.json['social_media']
+        lead_conv_enabled = request.json['lead_conv_enabled']
         
+        company_index_name = "nando"
+        general_copywriting = copywriting_agent.create_general_copywriting_chain(company_index_name, objectives, target_market, tone)
+        
+        hashtags = copywriting_agent.create_hashtags(general_copywriting)
+        post_metadata = copywriting_agent.generate_instagram_content(general_copywriting)
+        
+        print(post_metadata)
         ### after that the result of the generation would be 
         ### day, time, social_post_text, hashtags
         
         return jsonify({
             "posts":[{
                 "type": "instagram",
-                "day": "",
-                "time": "",
-                "social_post_text": "",
-                "hashtags": "",
+                "day": post_metadata["day"],
+                "time": post_metadata["time"],
+                "social_post_text": post_metadata["post"],
+                "hashtags": hashtags,
                 "ad_link": "",
                 "lead_link": "",
                 "img_link": ""
@@ -144,6 +151,7 @@ def generate_campaign(comp_id):
         
     except Exception as e:
             error_message = str(e)
+            print(traceback.format_exc())
             return jsonify({"error": error_message}), 400
         
 @ads_blueprint.route('/docupload',methods=["POST"])
@@ -185,15 +193,15 @@ def upload_stories():
             error_message = str(e)
             return jsonify({"error": error_message}), 400
         
-@ads_blueprint.route('/test-index',methods=["POST"])
-def check_stories():
+@ads_blueprint.route('/qa',methods=["POST"])
+def qa_docs():
     try:
         
         query = request.json['query']
         index_name = request.json['index_name']
 
-        data = vector_service.indexing(index_name, query)
-
+        data = copywriting_agent.question_answering_chain(index_name, query)
+        
         return jsonify({
             'message': data,
         }), 200
