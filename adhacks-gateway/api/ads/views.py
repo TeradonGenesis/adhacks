@@ -126,13 +126,16 @@ def generate_campaign(comp_id):
         social_media = request.json['social_media']
         lead_conv_enabled = request.json['lead_conv_enabled']
         
-        company_index_name = "nando"
+        company_index_name = "The Koi"
+        company_lowercase = company_index_name.lower()
+        company_index_name = company_lowercase.replace(" ", "_")
         general_copywriting = copywriting_agent.create_general_copywriting_chain(company_index_name, objectives, target_market, tone)
         
         hashtags = copywriting_agent.create_hashtags(general_copywriting)
         post_metadata = copywriting_agent.generate_instagram_content(general_copywriting)
         
-        print(post_metadata)
+        pic_link = copywriting_agent.find_photos(post_metadata["post"])
+        
         ### after that the result of the generation would be 
         ### day, time, social_post_text, hashtags
         
@@ -145,7 +148,7 @@ def generate_campaign(comp_id):
                 "hashtags": hashtags,
                 "ad_link": "",
                 "lead_link": "",
-                "img_link": ""
+                "img_link": pic_link
             }]
         }), 200
         
@@ -201,6 +204,22 @@ def qa_docs():
         index_name = request.json['index_name']
 
         data = copywriting_agent.question_answering_chain(index_name, query)
+        
+        return jsonify({
+            'message': data,
+        }), 200
+        
+    except Exception as e:
+            error_message = str(e)
+            return jsonify({"error": error_message}), 400
+        
+@ads_blueprint.route('/photo/generate',methods=["POST"])
+def get_photo():
+    try:
+        
+        copywriting = request.json['copywriting']
+
+        data = copywriting_agent.find_photos(copywriting)
         
         return jsonify({
             'message': data,
