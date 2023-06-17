@@ -17,6 +17,10 @@ const theme = createTheme({
     alert: {
       main: "#D10101",
     },
+
+    process: {
+      main: "#1EA896",
+    },
   },
 });
 

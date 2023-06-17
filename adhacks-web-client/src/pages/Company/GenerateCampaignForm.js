@@ -7,6 +7,7 @@ import DateInput from "@/components/FormInputs/DateInput";
 import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
+import GenerationSteps from "./GenerationSteps";
 
 const GenerateCampaignFormContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -31,7 +32,9 @@ const GenerateCampaignForm = ({ onCancel }) => {
 
   return (
     <GenerateCampaignFormContainer>
-      <Box sx={{ width: "100%", maxWidth: "800px" }}>
+      <GenerationSteps />
+
+      <Box sx={{ width: "100%", maxWidth: "800px", marginTop: "40px" }}>
         <Section
           label="Campaign information"
           description="Information that will help generate a campaign tailored for your business"
