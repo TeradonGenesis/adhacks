@@ -13,12 +13,15 @@ from langchain.chat_models import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain.agents import AgentType
 from langchain.memory import SimpleMemory
+from langchain.vectorstores import Pinecone
+from pexels_api import API
+
 
 from langchain.cache import SQLiteCache
 langchain.llm_cache = SQLiteCache(database_path=".langchain.db")
 
 load_dotenv()
-
+import pinecone
 class CopywritingAgent:
     
     def __init__(self) -> None:
@@ -30,8 +33,8 @@ class CopywritingAgent:
     ### 4. Come up with a general advertising copywriting with a certain tone
     
     def create_general_copywriting_chain(self, company_index_name, objectives, target, tone):
-        business = self.question_answering_chain(company_index_name, "What is the company's business amd what are they selling?")
-        strategy = self.question_answering_chain(f"{company_index_name}-market-research", "What is the company's unique selling point and marketing strategies?")
+        business = self.company_question_answering_chain(company_index_name, "What is the company's business and what are they selling?")
+        strategy = self.company_question_answering_chain(f"{company_index_name}-market-research", "What is the company's unique selling point and marketing strategies?")
         
         template = """You are a advertising executive for an ad agency. Given the company descrption, marketing strategy, objectives of the advert, tone of the advert, target market,
         it is your job to write an general for that copywriting with SEOs that mateches the objectives.
@@ -61,9 +64,9 @@ class CopywritingAgent:
         return data
         
     def generate_instagram_content(self, general_ad_copywriting):
-        characters = self.question_answering_chain("instagram-kb-index", "What is the preferred number of charcters for a instagram post?")
-        day = self.question_answering_chain("instagram-kb-index", "What is the day to post to instagram? Return only the day")
-        time = self.question_answering_chain("instagram-kb-index", "What is the best time to post to instagram? Return only the time")
+        characters = self.domain_question_answering_chain("instagram-kb-index", "What is the preferred number of charcters for a instagram post?")
+        day = self.domain_question_answering_chain("instagram-kb-index", "What is the best day to post to instagram? Return only the day")
+        time = self.domain_question_answering_chain("instagram-kb-index", "What is the best time to post to instagram? Return only the time")
         
         template = """You are a social media manager for an instagram account.  Given the general copywriting, 
         the best number of charcters for the post, the day of the instagram post, the time of the post, it is your job to write an instagram post for that copywriting.
@@ -86,9 +89,55 @@ class CopywritingAgent:
         post = social_chain.run({"day": day, "time": time, "characters": characters, "copywriting": general_ad_copywriting})
         return {"post": post, "day": day, "time": time}
     
-    def question_answering_chain(self, name, query):
+    def create_hashtags(self, general_ad_copywriting):
+        hashtags_template = """Based on the copywriting below, generate relevant hashtags to use:
+                        Copywriting: {copywright}
+                        Hashtags:"""
+
+        hashtags_prompt = PromptTemplate(
+            template=hashtags_template, input_variables=["copywright"]
+        )
+        hashtags_chain = LLMChain(llm=self.llm, prompt=hashtags_prompt, output_key="hashtags")
+        hashtags = hashtags_chain.run({"copywright": general_ad_copywriting})
+        return hashtags
+    
+    def company_question_answering_chain(self, name, query):
         search = Chroma(collection_name=name, persist_directory=".chromadb/", embedding_function=OpenAIEmbeddings())
         qa = RetrievalQA.from_chain_type(llm=self.llm, chain_type="stuff", retriever=search.as_retriever())
         return qa.run(query)
+    
+    def domain_question_answering_chain(self, name, query):
+        pinecone.init(
+            api_key=os.environ.get('PINECONE_API_KEY'),
+            environment=os.environ.get('PINECONE_API_ENV')
+        )
+        docsearch = Pinecone.from_existing_index(name, OpenAIEmbeddings())
+        qa = RetrievalQA.from_chain_type(llm=self.llm, chain_type="stuff", retriever=docsearch.as_retriever())
+        return qa.run(query)
+    
+    def find_photos(self, ad_copywriting):
+        pic_template = """Based on the copywriting below, suggest the best picture to be used accompany the copywriting for an instagram post. 
+        The picture description should not be more than 5 words:
+                        Copywriting: {copywright}
+                        Picture description:"""
 
+        pic_prompt = PromptTemplate(
+            template=pic_template, input_variables=["copywright"]
+        )
+        pic_chain = LLMChain(llm=self.llm, prompt=pic_prompt)
+        pic_desc = pic_chain.run({"copywright": ad_copywriting})
+        print(pic_desc)
+        api = API(os.environ.get('PEXELS_API_KEY'))
+        
+        api.search(pic_desc, page=1, results_per_page=5)
+        # Get photo entries
+        photos = api.get_entries()
+        # Loop the five photos
+        photo = photos[0]
+        print('Photographer: ', photo.photographer)
+        # Print url
+        print('Photo url: ', photo.url)
+        # Print original size url
+        print('Photo original size: ', photo.original)
+        return photo.url
         

@@ -15,7 +15,8 @@ from langchain.memory import SimpleMemory
 from langchain.schema import Document
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import CharacterTextSplitter
-
+import pinecone
+from langchain.vectorstores import Pinecone
 
 class VectorService:
     
@@ -53,7 +54,12 @@ class VectorService:
         doc_path = os.path.join(destination_folder, filename)
         loader = PyPDFLoader(doc_path)
         texts = loader.load_and_split(text_splitter=CharacterTextSplitter(chunk_size=1000, chunk_overlap=0))
-        Chroma.from_documents(texts, self.embeddings, collection_name=index_name, persist_directory=".chromadb/")
+        pinecone.init(
+            api_key=os.environ.get('PINECONE_API_KEY'),
+            environment=os.environ.get('PINECONE_API_ENV')
+        )
+
+        Pinecone.from_documents(texts, self.embeddings, index_name=index_name)
         
     def indexing(self, name, query):
         index = Chroma(collection_name=name, persist_directory=".chromadb/", embedding_function=self.embeddings)
