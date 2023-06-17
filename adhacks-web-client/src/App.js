@@ -1,8 +1,12 @@
+import { ThemeProvider } from "@mui/material";
+
+import theme from "./theme";
+
 const App = () => {
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <div>hello word</div>
-    </div>
+    </ThemeProvider>
   );
 };
 
