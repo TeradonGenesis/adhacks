@@ -52,6 +52,7 @@ const CompanyPage = () => {
             <ActionButton
               label="Generate new campaign"
               variant="outlined"
+              color={theme.palette.secondary.main}
               onClick={() => setIsGenerateFormShown(true)}
             />
           </Box>
@@ -108,12 +109,8 @@ const CompanyPage = () => {
           <ButtonContainer>
             <ActionButton
               label="Reset"
-              ButtonProps={{
-                sx: {
-                  backgroundColor: theme.palette.grey[500],
-                  width: "150px",
-                },
-              }}
+              color={theme.palette.grey[500]}
+              ButtonProps={{ sx: { width: "150px" } }}
             />
             <ActionButton
               label="Submit"

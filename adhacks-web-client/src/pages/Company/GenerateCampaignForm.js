@@ -133,12 +133,8 @@ const GenerateCampaignForm = ({ onCancel }) => {
           <ButtonContainer>
             <ActionButton
               label="Cancel"
-              ButtonProps={{
-                sx: {
-                  backgroundColor: theme.palette.grey[500],
-                  width: "150px",
-                },
-              }}
+              color={theme.palette.grey[500]}
+              ButtonProps={{ sx: { width: "150px" } }}
               onClick={onCancel}
             />
             <ActionButton

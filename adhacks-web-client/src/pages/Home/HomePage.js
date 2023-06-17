@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/material";
+import { Box, styled, useTheme } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +15,7 @@ const ToolbarContainer = styled(Box)(({ theme }) => ({
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleAddCompany = () => {
     navigate("/company/new");
@@ -37,6 +38,7 @@ const HomePage = () => {
         <ActionButton
           label="Add company"
           variant="outlined"
+          color={theme.palette.secondary.main}
           onClick={handleAddCompany}
         />
       </ToolbarContainer>
