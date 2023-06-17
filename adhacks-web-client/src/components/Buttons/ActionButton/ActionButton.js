@@ -1,7 +1,12 @@
 import { styled, Typography } from "@mui/material";
 import React, { useMemo } from "react";
 
-const ActionButton = ({ label, variant = "filled" }) => {
+const ActionButton = ({
+  label,
+  variant = "filled",
+  ContainerProps = {},
+  LabelProps = {},
+}) => {
   const { ActionButtonContainer, Label } = useMemo(() => {
     const isFilled = variant === "filled";
 
@@ -25,8 +30,8 @@ const ActionButton = ({ label, variant = "filled" }) => {
   }, [variant]);
 
   return (
-    <ActionButtonContainer sx={{}}>
-      <Label>{label}</Label>
+    <ActionButtonContainer {...ContainerProps}>
+      <Label {...LabelProps}>{label}</Label>
     </ActionButtonContainer>
   );
 };

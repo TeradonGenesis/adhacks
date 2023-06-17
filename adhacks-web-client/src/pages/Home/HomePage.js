@@ -5,10 +5,6 @@ import ActionButton from "@/components/Buttons/ActionButton";
 import TextInput from "@/components/FormInputs/TextInput";
 import Table from "@/components/Table";
 
-const HomePageContainer = styled(Box)(({ theme }) => ({
-  padding: `${theme.spacing(5)}`,
-}));
-
 const ToolbarContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
@@ -18,7 +14,7 @@ const ToolbarContainer = styled(Box)(({ theme }) => ({
 
 const HomePage = () => {
   return (
-    <HomePageContainer>
+    <Box>
       <ToolbarContainer>
         <TextInput TextFieldProps={{ placeholder: "Search something" }} />
 
@@ -28,7 +24,7 @@ const HomePage = () => {
       <Box>
         <Table />
       </Box>
-    </HomePageContainer>
+    </Box>
   );
 };
 

@@ -16,6 +16,10 @@ const HeaderText = styled(Typography)(({ theme }) => ({
   fontSize: "2rem",
 }));
 
+const OutletContainer = styled(Box)(({ theme }) => ({
+  padding: `${theme.spacing(5)}`,
+}));
+
 const AppLayout = () => {
   return (
     <Box>
@@ -23,7 +27,9 @@ const AppLayout = () => {
         <HeaderText>Holy Pandas</HeaderText>
       </HeaderContainer>
 
-      <Outlet />
+      <OutletContainer>
+        <Outlet />
+      </OutletContainer>
     </Box>
   );
 };

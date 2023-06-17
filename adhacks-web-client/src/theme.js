@@ -9,6 +9,10 @@ const theme = createTheme({
     border: {
       main: "#373737",
     },
+
+    alert: {
+      main: "#D10101",
+    },
   },
 });
 

@@ -21,7 +21,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const TextInput = ({ TextFieldProps = {} }) => {
-  return <StyledTextField {...TextFieldProps} />;
+  return <StyledTextField fullWidth {...TextFieldProps} />;
 };
 
 export default TextInput;
