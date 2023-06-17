@@ -230,18 +230,18 @@ def get_photo():
             error_message = str(e)
             return jsonify({"error": error_message}), 400
         
-@ads_blueprint.route('/video/generate',methods=["POST"])
-def get_video():
-    try:
+# @ads_blueprint.route('/video/generate',methods=["POST"])
+# def get_video():
+#     try:
         
-        copywriting = request.json['copywriting']
+#         copywriting = request.json['copywriting']
 
-        data = copywriting_agent.find_videos(copywriting)
+#         data = copywriting_agent.find_videos(copywriting)
         
-        return jsonify({
-            'link': data,
-        }), 200
+#         return jsonify({
+#             'link': data,
+#         }), 200
         
-    except Exception as e:
-            error_message = str(e)
-            return jsonify({"error": error_message}), 400
+#     except Exception as e:
+#             error_message = str(e)
+#             return jsonify({"error": error_message}), 400
