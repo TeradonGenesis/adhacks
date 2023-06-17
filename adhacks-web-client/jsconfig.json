@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/actions/*": ["src/actions/*"],
+      "@/assets/images/*": ["src/assets/images/*"],
+      "@/components/*": ["src/components/*"],
+      "@/containers/*": ["src/containers/*"],
+      "@/definitions/*": ["src/definitions/*"],
+      "@/enums/*": ["src/enums/*"],
+      "@/hoc/*": ["src/hoc/*"],
+      "@/mutations/*": ["src/mutations/*"],
+      "@/queries/*": ["src/queries/*"],
+      "@/sagas/*": ["src/sagas/*"],
+      "@/settings": ["src/settings.js"],
+      "@/styles/*": ["styles/*"],
+      "@/theme": ["src/theme.js"],
+      "@/utils/*": ["src/utils/*"],
+      "@/selectors/*": ["src/selectors/*"],
+      "@/routeSettings": ["src/routeSettings/"],
+      "@/contextProviders/*": ["src/contextProviders/*"],
+      "@/services/*": ["src/services/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
