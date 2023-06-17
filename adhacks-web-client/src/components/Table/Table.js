@@ -15,7 +15,7 @@ const HeaderCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
 }));
 
-const Table = ({}) => {
+const Table = ({ onRowClick }) => {
   const columns = [
     { name: "Name" },
     { name: "Industry type" },
@@ -45,7 +45,12 @@ const Table = ({}) => {
         <TableBody>
           {data.map((data) => {
             return (
-              <TableRow key={data.id}>
+              <TableRow
+                hover
+                key={data.id}
+                sx={{ cursor: "pointer" }}
+                onClick={onRowClick}
+              >
                 {columns.map((column) => {
                   return (
                     <TableCell key={`${column.name}-${data.id}`}>

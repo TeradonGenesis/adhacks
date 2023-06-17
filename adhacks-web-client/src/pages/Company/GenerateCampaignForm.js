@@ -3,6 +3,7 @@ import React from "react";
 
 import ActionButton from "@/components/Buttons/ActionButton";
 import CheckboxInput from "@/components/FormInputs/CheckboxInput";
+import DateInput from "@/components/FormInputs/DateInput";
 import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
@@ -68,7 +69,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
                 label="From"
                 SectionContainerProps={{ sx: { flex: 1 } }}
               >
-                <TextInput />
+                <DateInput />
               </Section>
 
               <Section
@@ -76,7 +77,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
                 label="To"
                 SectionContainerProps={{ sx: { flex: 1 } }}
               >
-                <TextInput />
+                <DateInput />
               </Section>
             </DualColumn>
           </Section>

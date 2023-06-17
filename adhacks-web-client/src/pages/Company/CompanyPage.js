@@ -28,13 +28,15 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 
 const CompanyPage = () => {
   const theme = useTheme();
+
   const { id } = useParams();
   const [isGenerateFormShown, setIsGenerateFormShown] = useState(false);
 
-  if (isGenerateFormShown)
+  if (isGenerateFormShown) {
     return (
       <GenerateCampaignForm onCancel={() => setIsGenerateFormShown(false)} />
     );
+  }
 
   return (
     <CompanyPageContainer>
@@ -105,7 +107,7 @@ const CompanyPage = () => {
 
           <ButtonContainer>
             <ActionButton
-              label="Cancel"
+              label="Reset"
               ButtonProps={{
                 sx: {
                   backgroundColor: theme.palette.grey[500],

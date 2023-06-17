@@ -1,6 +1,6 @@
 import { Box, Typography, styled } from "@mui/material";
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -21,10 +21,18 @@ const OutletContainer = styled(Box)(({ theme }) => ({
 }));
 
 const AppLayout = () => {
+  const navigate = useNavigate();
+
+  const handleGoHome = () => {
+    navigate("/");
+  };
+
   return (
     <Box>
       <HeaderContainer>
-        <HeaderText>Holy Pandas</HeaderText>
+        <button onClick={handleGoHome}>
+          <HeaderText>Holy Pandas</HeaderText>
+        </button>
       </HeaderContainer>
 
       <OutletContainer>

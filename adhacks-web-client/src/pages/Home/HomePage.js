@@ -20,6 +20,10 @@ const HomePage = () => {
     navigate("/company/new");
   };
 
+  const handleViewCompany = () => {
+    navigate("/company/dedwed");
+  };
+
   return (
     <Box>
       <ToolbarContainer>
@@ -37,7 +41,7 @@ const HomePage = () => {
         />
       </ToolbarContainer>
 
-      <Table />
+      <Table onRowClick={handleViewCompany} />
     </Box>
   );
 };
