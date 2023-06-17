@@ -116,7 +116,7 @@ class CopywritingAgent:
         return qa.run(query)
     
     def find_photos(self, ad_copywriting):
-        pic_template = """Based on the copywriting below, suggest the best picture to be used accompany the copywriting for an instagram post. 
+        pic_template = """Based on the copywriting below, suggest the best picture to be used to accompany the copywriting for an instagram post. 
         The picture description should not be more than 5 words:
                         Copywriting: {copywright}
                         Picture description:"""
@@ -140,4 +140,26 @@ class CopywritingAgent:
         # Print original size url
         print('Photo original size: ', photo.original)
         return photo.url
+    
+    def find_videos(self, ad_copywriting):
+        pic_template = """Based on the copywriting below, suggest the best video scenario to be used to accompany the copywriting for an instagram reels post. 
+        The picture description should not be more than 10 words:
+                        Copywriting: {copywright}
+                        Video description:"""
+
+        pic_prompt = PromptTemplate(
+            template=pic_template, input_variables=["copywright"]
+        )
+        pic_chain = LLMChain(llm=self.llm, prompt=pic_prompt)
+        pic_desc = pic_chain.run({"copywright": ad_copywriting})
+        print(pic_desc)
+        api = API(os.environ.get('PEXELS_API_KEY'))
+        
+        videos = api.search_videos(pic_desc, page=1, results_per_page=5)
+        # Get photo entries
+        
+        # Loop the five photos
+        video = videos['videos'][0]['video_files'][0]
+        
+        return video["link"]
         

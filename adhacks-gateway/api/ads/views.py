@@ -213,6 +213,7 @@ def qa_docs():
             error_message = str(e)
             return jsonify({"error": error_message}), 400
         
+        
 @ads_blueprint.route('/photo/generate',methods=["POST"])
 def get_photo():
     try:
@@ -222,7 +223,23 @@ def get_photo():
         data = copywriting_agent.find_photos(copywriting)
         
         return jsonify({
-            'message': data,
+            'link': data,
+        }), 200
+        
+    except Exception as e:
+            error_message = str(e)
+            return jsonify({"error": error_message}), 400
+        
+@ads_blueprint.route('/video/generate',methods=["POST"])
+def get_video():
+    try:
+        
+        copywriting = request.json['copywriting']
+
+        data = copywriting_agent.find_videos(copywriting)
+        
+        return jsonify({
+            'link': data,
         }), 200
         
     except Exception as e:
