@@ -5,19 +5,13 @@ from dotenv import load_dotenv
 import json
 
 from langchain import PromptTemplate, SQLDatabase
-from langchain.chains import APIChain, LLMMathChain, RetrievalQA, SQLDatabaseChain
-from langchain.experimental.plan_and_execute import  load_agent_executor, load_chat_planner
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.chains import APIChain, LLMMathChain, RetrievalQA, SQLDatabaseChain, LLMChain, SimpleSequentialChain, SequentialChain
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import Tool, initialize_agent
 from langchain.agents import AgentType
-from langchain.utilities import GoogleSerperAPIWrapper
-from langchain.chains import LLMChain
-
-from llama_index import download_loader
+from langchain.memory import SimpleMemory
 
 
 class CopywritingAgent:
@@ -26,129 +20,101 @@ class CopywritingAgent:
         self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, openai_api_key=os.environ.get('OPENAI_API_KEY'))
         self.embeddings = OpenAIEmbeddings()
     
-    def copywriting_agent(self, doc_context, input_topic):
-        copywriting_template = """Use the context below to write a 400 word blog post about the topic below:
-                        Context: {context}
-                        Topic: {topic}
-                        Blog post:"""
-
-        copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["context", "topic"]
-        )
-        copywriting_prompt.format(context=doc_context, topic=input_topic)
-        copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
-        
-        tools = [
-            Tool(
-                name="Copywriting tool",
-                func=copywriting_chain.run,
-                description="This tool is useful to answer queries regarding the website content",
-            ),
-        ]
-        
-        agent = initialize_agent(llm=self.llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, max_iterations=10, max_execution_time=10, early_stopping_method="generate", verbose=True)
-        return agent
+    ### 1. Access company data
+    ### 2. Access market research data
+    ### 3. llm chain to correlate company and advertising objectives to know what you are selling and use previous market research data to your advantage
+    ### 4. Come up with a general advertising copywriting with a certain tone
     
-    def create_general_copywriting_tool(self, doc_context, input_topic):
-        copywriting_template = """Use the context below to write a 400 word blog post about the topic below:
-                        Context: {context}
-                        Topic: {topic}
-                        Blog post:"""
+    def create_general_copywriting_chain(self, company_index_name, objectives, tone):
+        business = self.question_answering_chain(company_index_name, "What does the company do?")
+        strategy = self.question_answering_chain(f"{company_index_name}-market-research", "What is the company's unique selling point and marketing strategies?")
+        
+        template = """You are a advertising executive for an ad agency. Given the company descrption, marketing strategy, objectives of the advert and tone of the advert
+        it is your job to write an general for that copywriting with SEOs that mateches the objectives.
+        
+        Company business:
+        {business}
+        
+        Marketing strategy:
+        {strategy}
+        
+        Objectives of the advert:
+        {objective}
 
-        copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["context", "topic"]
-        )
-        copywriting_prompt.format(context=doc_context, topic=input_topic)
-        copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
+        Tone of the advert:
+        {tone}
         
-        
-        tool = Tool(
-            name="Copywriting tool",
-            func=copywriting_chain.run,
-            description="This tool is useful to answer queries regarding the website content",
-        ),
-        return tool
-    
-    def create_twitter_copywriting_tool(self, doc_context, input_topic):
-        copywriting_template = """Use the context below to write a 400 word blog post about the topic below:
-                        Context: {context}
-                        Topic: {topic}
-                        Blog post:"""
+        General copywriting:
+        """
+        prompt_template = PromptTemplate(input_variables=["business", "strategy", "objective", "tone"], template=template)
+        prompt_template.format(business = business, strategy = strategy, objective = objectives, tone = tone)
+        copywriting_chain = LLMChain(llm=self.llm, prompt=prompt_template)
 
-        copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["context", "topic"]
-        )
-        copywriting_prompt.format(context=doc_context, topic=input_topic)
-        copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
-        
-        
-        tool = Tool(
-            name="Copywriting tool",
-            func=copywriting_chain.run,
-            description="This tool is useful to answer queries regarding the website content",
-        ),
-        return tool
+        data = copywriting_chain.run("Create a general copywriting for the advertising effort")
     
-    def create_facebook_copywriting_tool(self, doc_context, input_topic):
-        copywriting_template = """Use the context below to write a 400 word blog post about the topic below:
-                        Context: {context}
-                        Topic: {topic}
-                        Blog post:"""
-
-        copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["context", "topic"]
-        )
-        copywriting_prompt.format(context=doc_context, topic=input_topic)
-        copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
-        
-        
-        tool = Tool(
-            name="Copywriting tool",
-            func=copywriting_chain.run,
-            description="This tool is useful to answer queries regarding the website content",
-        ),
-        return tool
+        return data
     
-    def create_instagram_copywriting_tool(self, input_topic, input_tone):
-        copywriting_template = """Rewrite the copywriting below into a more instagram based copywriting in a {tone} tone:
+    
+    def question_answering_chain(self, name, query):
+        search = Chroma(collection_name=name, persist_directory=".chromadb/", embedding_function=self.embeddings)
+        qa = RetrievalQA.from_chain_type(llm=self.llm, chain_type="stuff", retriever=search.as_retriever())
+        return qa.run(query)
+        
+        
+    def generate_instagram_content(self, general_ad_copywriting, tone):
+        charcters = self.question_answering_chain("instagram-kb-index", "What is the prefeered number of charcters for a instagram post?")
+        day = self.question_answering_chain("instagram-kb-index", "What is the day to post to instagram? Return only the day")
+        time = self.question_answering_chain("instagram-kb-index", "What is the best time to post to instagram? Return only the time")
+        
+        copywriting_template = """Rewrite the copywriting below into a more instagram compliant copywriting:
                         General copywriting: {copywriting}
                         Intagram copywriting:"""
 
         copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["copywriting", "tone"]
+            template=copywriting_template, input_variables=["copywriting"]
         )
         
-        copywriting_prompt.format(topic=input_topic, tone=input_tone)
         copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
         
-        
-        tool = Tool(
-            name="Copywriting tool",
-            func=copywriting_chain.run,
-            description="This tool is useful to answer queries regarding the website content",
-        ),
-        return tool
-        
-    
-    def hashtags_generation_agent(self, doc_context, input_topic):
-        copywriting_template = """Based on the copywriting below, generate relevant hashtags to use:
-                        Copywriting: {topic}
+        hashtags_template = """Based on the copywriting below, generate relevant hashtags to use:
+                        Copywriting: {instagram_copywriting}
                         Hashtags:"""
 
-        copywriting_prompt = PromptTemplate(
-            template=copywriting_template, input_variables=["context", "topic"]
+        hashtags_prompt = PromptTemplate(
+            template=hashtags_template, input_variables=["instagram_copywriting"]
         )
-        copywriting_prompt.format(context=doc_context, topic=input_topic)
-        copywriting_chain = LLMChain(llm=self.llm, prompt=copywriting_prompt)
+        hashtags_chain = LLMChain(llm=self.llm, prompt=hashtags_prompt)
         
-        tools = [
-            Tool(
-                name="Hashtag generation tool",
-                func=copywriting_chain.run,
-                description="This tool is useful to answer queries regarding the website content",
-            ),
-        ]
         
-        agent = initialize_agent(llm=self.llm, tools=tools, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, max_iterations=10, max_execution_time=10, early_stopping_method="generate", verbose=True)
-        return agent
+        template = """You are a social media manager for an instagram account.  Given the general copywriting, 
+        the best number of charcters for the post, the day of the instagram post, the time of the post, it is your job to write an instagram post for that copywriting.
+        Here is some context about the day, time and characters of the posting
+        Day: {day}
+        Time: {time}
+        
+        Number of characters:
+        {characters}
+
+        Intagram copywriting:
+        {copywriting}
+        
+        Intagram hashtags:
+        {hashtags}
+        
+        Instagram Post:
+        """
+        prompt_template = PromptTemplate(input_variables=["day", "time", "characters", "copywriting"], template=template)
+        social_chain = LLMChain(llm=self.llm, prompt=prompt_template, output_key="social_post_text")
+
+        overall_chain = SequentialChain(
+            memory=SimpleMemory(memories={"day": day, "time": time, "charcters": charcters, "copywriting": general_ad_copywriting}),
+            chains=[copywriting_chain, hashtags_chain, social_chain],
+            input_variables=["copywriting"],
+            # Here we return multiple variables
+            output_variables=["social_post_text"],
+            verbose=True)
+
+        json_data = overall_chain({"copywriting":general_ad_copywriting})
+        return json_data
+
         
