@@ -12,7 +12,7 @@ const ActionButton = ({
   const theme = useTheme();
   const { ActionButtonContainer, Label } = useMemo(() => {
     const isFilled = variant === "filled";
-    const selectedColor = color || theme.palette.primary.main;
+    const selectedColor = color || theme.palette.secondary.main;
 
     const ActionButtonContainer = styled("button")(({ theme }) => ({
       backgroundColor: isFilled ? selectedColor : theme.palette.common.white,
