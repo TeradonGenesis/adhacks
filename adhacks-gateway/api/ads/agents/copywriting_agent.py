@@ -13,12 +13,12 @@ from langchain.agents import Tool, initialize_agent
 from langchain.agents import AgentType
 from langchain.memory import SimpleMemory
 
+load_dotenv()
 
 class CopywritingAgent:
     
     def __init__(self) -> None:
         self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, openai_api_key=os.environ.get('OPENAI_API_KEY'))
-        self.embeddings = OpenAIEmbeddings()
     
     ### 1. Access company data
     ### 2. Access market research data
@@ -56,7 +56,7 @@ class CopywritingAgent:
     
     
     def question_answering_chain(self, name, query):
-        search = Chroma(collection_name=name, persist_directory=".chromadb/", embedding_function=self.embeddings)
+        search = Chroma(collection_name=name, persist_directory=".chromadb/", embedding_function=OpenAIEmbeddings())
         qa = RetrievalQA.from_chain_type(llm=self.llm, chain_type="stuff", retriever=search.as_retriever())
         return qa.run(query)
         
