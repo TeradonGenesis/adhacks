@@ -1,11 +1,12 @@
 import { Box, styled, useTheme } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import ActionButton from "@/components/Buttons/ActionButton";
 import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
+import GenerateCampaignForm from "./GenerateCampaignForm";
 
 const CompanyPageContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -28,6 +29,12 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 const CompanyPage = () => {
   const theme = useTheme();
   const { id } = useParams();
+  const [isGenerateFormShown, setIsGenerateFormShown] = useState(false);
+
+  if (isGenerateFormShown)
+    return (
+      <GenerateCampaignForm onCancel={() => setIsGenerateFormShown(false)} />
+    );
 
   return (
     <CompanyPageContainer>
@@ -40,7 +47,11 @@ const CompanyPage = () => {
               marginBottom: theme.spacing(4),
             }}
           >
-            <ActionButton label="Generate new campaign" variant="outlined" />
+            <ActionButton
+              label="Generate new campaign"
+              variant="outlined"
+              onClick={() => setIsGenerateFormShown(true)}
+            />
           </Box>
         )}
 
