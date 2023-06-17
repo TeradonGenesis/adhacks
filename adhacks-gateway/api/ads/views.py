@@ -20,10 +20,10 @@ def get_companies():
         
         return jsonify({
             'companies': [{
-                "company_id": "",
-                "company_name": "",
-                "company_industry_type":"",
-                "total_campaigns":"",
+                "company_id": "1323",
+                "company_name": "The Koi",
+                "company_industry_type":"Food & Beverages",
+                "total_campaigns":"0",
             }]
         }), 200
         
@@ -38,14 +38,12 @@ def get_specific_company(comp_id):
     
         return jsonify(
             {
-                "company_name": "",
-                "company_website":"",
-                "company_description":"",
-                "company_industry_type":"",
-                "company_unique_selling":"",
-                "company_marketing_strategy":"",
-                "competitor_unique_selling":"",
-                "competitor_marketing_strategy":"",
+                "company_name": "The Koi",
+                "company_website":"https://www.koithe.com/en",
+                "company_description":"Hailing from Taiwan, KOI THÉ embraces its origins by infusing its tea products with cultural perfection and impeccable quality. The refined taste of brewed tea has brought about a huge following, with customers lining up in throngs to taste it! The refreshing lineup of teas include traditional varieties of green and black tea. This is then mixed with fun toppings such as golden bubbles, grass jelly, and even aloe vera! Each sip has a fresh, delicate flavour with a soothing aftertaste––a perfect accompaniment to a day of shopping",
+                "company_industry_type":"Food & Beverages",
+                "company_unique_selling":"As a business owner, it's important to keep an eye on your competitors and their marketing strategies. By doing so, you can learn from their successes and failures and apply those lessons to your own business. In the case of The Koi, a Taiwanese tea company, there are a few marketing strategies that could be emulated from their competitors.\n\nFirstly, The Koi could consider partnering with influencers or celebrities to promote their products. Many of their competitors have successfully used this strategy to increase brand awareness and drive sales. By partnering with someone who has a large following on social media, The Koi could reach a wider audience and potentially attract new customers.\n\nAnother strategy that The Koi could adopt is offering limited-time promotions or discounts. This is a common tactic used by many of their competitors to incentivize customers to make a purchase. By offering a discount or promotion for a limited time, The Koi could create a sense of urgency and encourage customers to act quickly.\n\nLastly, The Koi could consider expanding their product line to include more unique and innovative flavors. Many of their competitors have successfully differentiated themselves by offering unique and exciting flavors that customers can't find elsewhere. By offering a wider variety of flavors, The Koi could attract new customers and keep existing ones coming back for more.\n\nIn conclusion, by keeping an eye on their competitors and adopting some of their successful marketing strategies, The Koi could increase brand awareness, drive sales, and attract new customers. It's important to remember that not every strategy will work for every business, so it's important to experiment and find what works best for your specific brand and audience.",
+                "company_marketing_strategy":"When it comes to the food and beverage industry, competition is fierce. Every company is trying to stand out and attract customers with their unique selling points. One of the competitors in this industry is known for their use of fresh, organic ingredients, while another is known for their innovative and creative menu offerings. But what about The Koi?\n\nThe Koi is a company that hails from Taiwan and prides itself on infusing its tea products with cultural perfection and impeccable quality. Their refined taste of brewed tea has brought about a huge following, with customers lining up in throngs to taste it! The refreshing lineup of teas includes traditional varieties of green and black tea, mixed with fun toppings such as golden bubbles, grass jelly, and even aloe vera! Each sip has a fresh, delicate flavor with a soothing aftertaste––a perfect accompaniment to a day of shopping.\n\nSo, how does The Koi stand out from its competitors? While other companies may focus on organic ingredients or creative menu offerings, The Koi focuses on the cultural significance of tea and the art of brewing it to perfection. They also offer a unique and refreshing twist on traditional tea by adding fun and exciting toppings. This sets them apart from their competitors and gives customers a reason to choose The Koi over other tea shops.\n\nIn conclusion, while other companies may have their own unique selling points, The Koi stands out by focusing on the cultural significance of tea and offering a refreshing twist on traditional tea. By continuing to emphasize these aspects of their brand, The Koi can continue to attract customers and stand out in the competitive food and beverage industry.",
             }
         ), 200
         
@@ -94,15 +92,14 @@ def get_specific_campaign(comp_id):
         
         return jsonify({
             "campaigns":[{
-                "id": "",
-                "social_media": "",
-                "tone": "",
-                "city": "",
-                "start_date": "",
-                "end_date": "",
-                "target_market": "",
-                "objectives": "",
-                "lead_conv_enabled": "",
+                "id": "1",
+                "social_media": ['instagram'],
+                "tone": "friendly",
+                "start_date": "12/03/2023",
+                "end_date": "16/03/2023",
+                "target_market": "Youth adults between the age of 15 to 25",
+                "objectives": "To advertise a limited edition drink, Cheesey Foam Black Team with Pearls",
+                "lead_conv_enabled": "N",
                 "link": ""
             }]
         }), 200
