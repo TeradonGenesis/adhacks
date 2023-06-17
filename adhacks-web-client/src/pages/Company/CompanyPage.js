@@ -1,7 +1,9 @@
 import { Box, styled, useTheme } from "@mui/material";
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ActionButton from "@/components/Buttons/ActionButton";
+import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
 
@@ -25,10 +27,23 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 
 const CompanyPage = () => {
   const theme = useTheme();
+  const { id } = useParams();
 
   return (
     <CompanyPageContainer>
       <Box sx={{ width: "100%", maxWidth: "800px" }}>
+        {id && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: theme.spacing(4),
+            }}
+          >
+            <ActionButton label="Generate new campaign" variant="outlined" />
+          </Box>
+        )}
+
         <Section
           label="Company details"
           description="Information about the company"
@@ -60,7 +75,7 @@ const CompanyPage = () => {
           </DualColumn>
 
           <Section required label="Industry type">
-            <TextInput />
+            <SelectInput />
           </Section>
 
           <Section
@@ -80,7 +95,7 @@ const CompanyPage = () => {
           <ButtonContainer>
             <ActionButton
               label="Cancel"
-              ContainerProps={{
+              ButtonProps={{
                 sx: {
                   backgroundColor: theme.palette.grey[500],
                   width: "150px",
@@ -89,7 +104,7 @@ const CompanyPage = () => {
             />
             <ActionButton
               label="Submit"
-              ContainerProps={{ sx: { width: "150px" } }}
+              ButtonProps={{ sx: { width: "150px" } }}
             />
           </ButtonContainer>
         </Section>

@@ -1,5 +1,6 @@
 import { Box, styled } from "@mui/material";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import ActionButton from "@/components/Buttons/ActionButton";
 import TextInput from "@/components/FormInputs/TextInput";
@@ -13,17 +14,30 @@ const ToolbarContainer = styled(Box)(({ theme }) => ({
 }));
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleAddCompany = () => {
+    navigate("/company/new");
+  };
+
   return (
     <Box>
       <ToolbarContainer>
-        <TextInput TextFieldProps={{ placeholder: "Search something" }} />
+        <TextInput
+          TextFieldProps={{
+            placeholder: "Search something",
+            sx: { width: "300px" },
+          }}
+        />
 
-        <ActionButton label="Add company" variant="outlined" />
+        <ActionButton
+          label="Add company"
+          variant="outlined"
+          onClick={handleAddCompany}
+        />
       </ToolbarContainer>
 
-      <Box>
-        <Table />
-      </Box>
+      <Table />
     </Box>
   );
 };

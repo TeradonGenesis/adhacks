@@ -4,8 +4,9 @@ import React, { useMemo } from "react";
 const ActionButton = ({
   label,
   variant = "filled",
-  ContainerProps = {},
+  ButtonProps = {},
   LabelProps = {},
+  onClick,
 }) => {
   const { ActionButtonContainer, Label } = useMemo(() => {
     const isFilled = variant === "filled";
@@ -30,7 +31,7 @@ const ActionButton = ({
   }, [variant]);
 
   return (
-    <ActionButtonContainer {...ContainerProps}>
+    <ActionButtonContainer onClick={onClick} {...ButtonProps}>
       <Label {...LabelProps}>{label}</Label>
     </ActionButtonContainer>
   );
