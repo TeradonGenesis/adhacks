@@ -1,4 +1,5 @@
 import { Box, styled, useTheme } from "@mui/material";
+import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -43,12 +44,33 @@ const GenerateCampaignForm = ({ onCancel }) => {
   });
 
   const onSubmit = ({ tone, city, duration, targetAudience, objectives }) => {
-    fetch(
-      "http://127.0.0.1:5000/public/api/v1/ads/companies/1001/campaigns/generate",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    // fetch(
+    //   "http://127.0.0.1:5000/public/api/v1/ads/companies/1001/campaigns/generate",
+    //   {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       tone,
+    //       city,
+    //       start_date: "",
+    //       end_date: "",
+    //       target_market: targetAudience,
+    //       campaign_purpose: objectives,
+    //       link: "",
+    //       social_media: "instagram",
+    //       lead_conv_enabled: false,
+    //     }),
+    //   }
+    // )
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((error) => console.log({ error }));
+
+    axios
+      .post(
+        "http://127.0.0.1:5000/public/api/v1/ads/companies/1001/campaigns/generate",
+        {
           tone,
           city,
           start_date: "",
@@ -58,13 +80,12 @@ const GenerateCampaignForm = ({ onCancel }) => {
           link: "",
           social_media: "instagram",
           lead_conv_enabled: false,
-        }),
-      }
-    )
+        }
+      )
       .then((res) => {
-        console.log(res);
+        console.log("response:", res);
       })
-      .catch((error) => console.log({ error }));
+      .catch((error) => console.log("error:", { error }));
   };
 
   return (
