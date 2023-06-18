@@ -1,5 +1,6 @@
 import { styled, TextField } from "@mui/material";
 import React from "react";
+import { Controller } from "react-hook-form";
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
@@ -21,8 +22,29 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const TextInput = ({ TextFieldProps = {} }) => {
-  return <StyledTextField fullWidth {...TextFieldProps} />;
+const TextInput = ({ control, controlName, TextFieldProps = {} }) => {
+  if (!control) {
+    return <StyledTextField fullWidth {...TextFieldProps} />;
+  }
+
+  return (
+    <Controller
+      control={control}
+      name={controlName}
+      render={({ field }) => {
+        const { value, onChange } = field;
+
+        return (
+          <StyledTextField
+            fullWidth
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            {...TextFieldProps}
+          />
+        );
+      }}
+    />
+  );
 };
 
 export default TextInput;

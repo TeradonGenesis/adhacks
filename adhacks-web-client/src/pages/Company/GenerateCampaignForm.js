@@ -1,5 +1,6 @@
 import { Box, styled, useTheme } from "@mui/material";
 import React from "react";
+import { useForm } from "react-hook-form";
 
 import ActionButton from "@/components/Buttons/ActionButton";
 import CheckboxInput from "@/components/FormInputs/CheckboxInput";
@@ -7,6 +8,7 @@ import DateInput from "@/components/FormInputs/DateInput";
 import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
+import { cityOptions, toneOptions } from "@/utils/companyPageUtils";
 import GenerationSteps from "./GenerationSteps";
 
 const GenerateCampaignFormContainer = styled(Box)(({ theme }) => ({
@@ -29,6 +31,41 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 
 const GenerateCampaignForm = ({ onCancel }) => {
   const theme = useTheme();
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      tone: "",
+      city: null,
+      duration: { from: null, to: null },
+      targetAudience: "",
+      objectives: "",
+    },
+  });
+
+  const onSubmit = ({ tone, city, duration, targetAudience, objectives }) => {
+    fetch(
+      "http://127.0.0.1:5000/public/api/v1/ads/companies/1001/campaigns/generate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tone,
+          city,
+          start_date: "",
+          end_date: "",
+          target_market: targetAudience,
+          campaign_purpose: objectives,
+          link: "",
+          social_media: "instagram",
+          lead_conv_enabled: false,
+        }),
+      }
+    )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => console.log({ error }));
+  };
 
   return (
     <GenerateCampaignFormContainer>
@@ -53,7 +90,11 @@ const GenerateCampaignForm = ({ onCancel }) => {
               label="Tone"
               SectionContainerProps={{ sx: { flex: 1 } }}
             >
-              <SelectInput />
+              <SelectInput
+                control={control}
+                controlName="tone"
+                SelectProps={{ options: toneOptions }}
+              />
             </Section>
 
             <Section
@@ -61,7 +102,11 @@ const GenerateCampaignForm = ({ onCancel }) => {
               label="City"
               SectionContainerProps={{ sx: { flex: 1 } }}
             >
-              <SelectInput />
+              <SelectInput
+                control={control}
+                controlName="city"
+                SelectProps={{ options: cityOptions }}
+              />
             </Section>
           </DualColumn>
 
@@ -72,7 +117,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
                 label="From"
                 SectionContainerProps={{ sx: { flex: 1 } }}
               >
-                <DateInput />
+                <DateInput control={control} controlName="duration.from" />
               </Section>
 
               <Section
@@ -80,7 +125,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
                 label="To"
                 SectionContainerProps={{ sx: { flex: 1 } }}
               >
-                <DateInput />
+                <DateInput control={control} controlName="duration.to" />
               </Section>
             </DualColumn>
           </Section>
@@ -91,6 +136,8 @@ const GenerateCampaignForm = ({ onCancel }) => {
             description="Describe the target audience for this campaign"
           >
             <TextInput
+              control={control}
+              controlName="targetAudience"
               TextFieldProps={{
                 multiline: true,
                 minRows: 4,
@@ -105,6 +152,8 @@ const GenerateCampaignForm = ({ onCancel }) => {
             description="What are the objectives of this campaign?"
           >
             <TextInput
+              control={control}
+              controlName="objectives"
               TextFieldProps={{
                 multiline: true,
                 minRows: 4,
@@ -113,7 +162,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
             />
           </Section>
 
-          <Section
+          {/* <Section
             label="Select your desired social channels"
             required
             description="Where would you like this campaign to run?"
@@ -124,14 +173,14 @@ const GenerateCampaignForm = ({ onCancel }) => {
             <CheckboxInput label="Instagram" />
             <CheckboxInput label="Twitter" />
             <CheckboxInput label="Facebook" />
-          </Section>
+          </Section> */}
 
-          <Section
+          {/* <Section
             label="Enable link conversion bot"
             ChildrenContainerProps={{ sx: { width: "200px" } }}
           >
             <SelectInput />
-          </Section>
+          </Section> */}
 
           <ButtonContainer>
             <ActionButton
@@ -143,6 +192,7 @@ const GenerateCampaignForm = ({ onCancel }) => {
             <ActionButton
               label="Submit"
               ButtonProps={{ sx: { width: "150px" } }}
+              onClick={handleSubmit(onSubmit)}
             />
           </ButtonContainer>
         </Section>

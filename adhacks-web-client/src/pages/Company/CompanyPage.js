@@ -1,11 +1,13 @@
 import { Box, styled, useTheme } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { json, useNavigate, useParams } from "react-router-dom";
 
 import ActionButton from "@/components/Buttons/ActionButton";
 import SelectInput from "@/components/FormInputs/SelectInput";
 import TextInput from "@/components/FormInputs/TextInput";
 import Section from "@/components/Section";
+import { industryOptions } from "@/utils/companyPageUtils";
 import GenerateCampaignForm from "./GenerateCampaignForm";
 
 const CompanyPageContainer = styled(Box)(({ theme }) => ({
@@ -28,9 +30,34 @@ const ButtonContainer = styled(Box)(({ theme }) => ({
 
 const CompanyPage = () => {
   const theme = useTheme();
-
   const { id } = useParams();
   const [isGenerateFormShown, setIsGenerateFormShown] = useState(false);
+
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name: "",
+      website: "",
+      industryType: null,
+      description: "",
+    },
+  });
+
+  const onSubmit = ({ name, website, industryType, description }) => {
+    fetch("http://127.0.0.1:5000/public/api/v1/ads/companies/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        co_name: name,
+        co_url: website,
+        co_description: industryType.value,
+        industry_type: description,
+      }),
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => console.log({ error }));
+  };
 
   if (isGenerateFormShown) {
     return (
@@ -76,7 +103,11 @@ const CompanyPage = () => {
               label="Name"
               SectionContainerProps={{ sx: { flex: 1 } }}
             >
-              <TextInput TextFieldProps={{ placeholder: "Company name" }} />
+              <TextInput
+                control={control}
+                controlName="name"
+                TextFieldProps={{ placeholder: "Company name" }}
+              />
             </Section>
 
             <Section
@@ -84,12 +115,16 @@ const CompanyPage = () => {
               label="Website"
               SectionContainerProps={{ sx: { flex: 1 } }}
             >
-              <TextInput TextFieldProps={{ placeholder: "Company website" }} />
+              <TextInput
+                control={control}
+                controlName="website"
+                TextFieldProps={{ placeholder: "Company website" }}
+              />
             </Section>
           </DualColumn>
 
           <Section required label="Industry type">
-            <SelectInput />
+            <SelectInput SelectProps={{ options: industryOptions }} />
           </Section>
 
           <Section
@@ -98,6 +133,8 @@ const CompanyPage = () => {
             description="Describe the company and what it does"
           >
             <TextInput
+              control={control}
+              controlName="description"
               TextFieldProps={{
                 multiline: true,
                 minRows: 4,
@@ -115,6 +152,7 @@ const CompanyPage = () => {
             <ActionButton
               label="Submit"
               ButtonProps={{ sx: { width: "150px" } }}
+              onClick={handleSubmit(onSubmit)}
             />
           </ButtonContainer>
         </Section>
